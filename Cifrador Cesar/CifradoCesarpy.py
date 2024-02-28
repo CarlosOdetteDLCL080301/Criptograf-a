@@ -1,3 +1,5 @@
+import string
+
 #Función para limpiar la llave, eliminando las palabras que se repiten
 def limpiarCadena(llave):
     #Recorremos la llave letra por letra
@@ -15,27 +17,19 @@ def limpiarCadena(llave):
     #Regresamos la llave limpia
     return llave
 
+# Creamos una función para crear un mapa del abecedario con una llave
+def crearMapaAbecedario(llave):
+    return limpiarCadena(llave+string.ascii_lowercase+string.ascii_uppercase)
+
 # Creamos una función para cifrar un texto con el cifrado César
-def cifrado_cesar(texto, desplazamiento):
+def cifrado_cesar(texto, desplazamiento, mapaLlave):
     resultado = ""
     for letra in texto:
         # Comprobamos que sea una letra
         if letra.isalpha(): 
-            # Comprobamos si es mayúscula
-            if letra.isupper(): 
-                # Convertimos la letra a un número entre 0 y 25
-                codigo = ord(letra) - ord('A') 
-                # Aplicamos el desplazamiento considerando que si se pasa de 25 debe volver a empezar
-                codigo = (codigo + desplazamiento) % 26
-                # Convertimos el número resultante a letra y lo añadimos al texto cifrado 
-                resultado += chr(codigo + ord('A')) 
-            else:
-                # Comprobamos que sea una letra
-                codigo = ord(letra) - ord('a')
-                # Aplicamos el desplazamiento considerando que si se pasa de 25 debe volver a empezar
-                codigo = (codigo + desplazamiento) % 26
-                # Convertimos el número resultante A letra y lo añadimos al texto cifrado
-                resultado += chr(codigo + ord('a'))
+            # Obtenemos el índice de la letra en el mapa
+            indiceEnMapa = mapaLlave.find(letra)
+            resultado += mapaLlave[(indiceEnMapa + desplazamiento) % len(mapaLlave)]
         else:
             # Si no es una letra lo añadimos tal cual
             resultado += letra 
@@ -45,16 +39,19 @@ def cifrado_cesar(texto, desplazamiento):
 #Se recibe la cadena que se desea cifrar
 texto_original = "Por mi raza hablara el espiritu"
 # Se recibe una llave
-llave = "DELACRUZLOPEZ"
-# Si la llave, tiene letras repetidas, se eliminan para reducir las posibilidades de cifrarlo
-texto_limpio = limpiarCadena(llave)
-# Se recorre la llave para cifrar el texto con cada letra de la llave
-for letraLlave in texto_limpio:
-    # Se verifica que la letra sea una letra
-    if letraLlave.isalpha():
-        # Se obtiene el desplazamiento de la letra
-        desplazamiento = ord(letraLlave) - ord('A') if letraLlave.isupper() else ord(letraLlave) - ord('a')
-        # Se cifra el texto con el desplazamiento obtenido
-        texto_cifrado = cifrado_cesar(texto_original, desplazamiento)
-        # Se imprime el texto cifrado
-        print(f"El texto ''{texto_original}'' cifrado con la llave {letraLlave} es: '{texto_cifrado}'")
+llave = "Por mi raza hablara el espiritu"
+# Se recibe el desplazamiento
+desplazamiento = 3
+# Se crea el mapa del abecedario con la llave
+#mapaLlave = string.ascii_lowercase+string.ascii_uppercase
+mapaLlave = crearMapaAbecedario(llave)
+# Se cifra el texto con el desplazamiento obtenido
+texto_cifrado = cifrado_cesar(texto_original, desplazamiento, mapaLlave)
+dimensionImpresion = 150
+print(f"".center(dimensionImpresion, "="))
+print(f"Mapa utilizado: {mapaLlave}".center(dimensionImpresion, " "))
+print(f"".center(dimensionImpresion, "="))
+# Se imprime el texto 
+print(f"".center(dimensionImpresion, "#"))
+print(f"El texto ''{texto_original}'' cifrado con la llave {desplazamiento} es: '{texto_cifrado}'".center(dimensionImpresion, " "))
+print(f"".center(dimensionImpresion, "#"))
