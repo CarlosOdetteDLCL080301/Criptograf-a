@@ -10,6 +10,13 @@ def desplazarUno(mensaje):
         nuevaCadena += alfabeto[(alfabeto.find(letra) + 1)%len(alfabeto)]
     return nuevaCadena
 
+def desplazarMenosUno(mensaje):
+    global alfabeto
+    nuevaCadena = ""
+    for letra in mensaje:
+        nuevaCadena += alfabeto[(alfabeto.find(letra) - 1)%len(alfabeto)]
+    return nuevaCadena
+
 # Realizamos una función para intercambiar un caracter en una cadena con una nueva letra
 def reemplazarCaracter(cadena,nuevoCaracter, indice):
     return cadena[:indice] + nuevoCaracter + cadena[indice + 1:]
@@ -23,11 +30,13 @@ def permutacion(cadena, movimiento):
 
 def rellenarCadena(cadena):
     cadena += "X" * (4 - len(cadena) % 4)
+    print(f"Se relleno la cadena, para poder cifrarlo con este metodo, ahora {cadena}")
+    return cadena
     
 # Realizamos una función para agregarlo a un arreglo, esto permitiendo la división de la cadena en 4 partes
 def agregarAlArreglo(mensaje):
     if len(mensaje) % 4 != 0:
-        rellenarCadena(mensaje)
+        mensaje = rellenarCadena(mensaje)
     arreglo = []
     cadena = ""
     contador = 0
@@ -54,18 +63,33 @@ def intercambiarIndices(arreglo):
 def cifradoLucifer(mensaje, patronPermutacion, ronda):
     estructura = agregarAlArreglo(mensaje)
     for j in range(ronda):
-        if j == ronda - 1:
-            estructura = intercambiarIndices(estructura)
         for i in range(0, len(estructura), 2):
             estructura[i] = desplazarUno(estructura[i])
             estructura[i] =  permutacion(estructura[i], patronPermutacion)
+        if j != ronda - 1:
+            estructura = intercambiarIndices(estructura)
     return estructura
-    
+
+def invertirPatron(patron):
+    nuevoPatron = ""
+    for indice in patron:
+        nuevoPatron += patron[int(indice)-1]
+    return nuevoPatron
+
+def descrifrarLucifer(arreglo_cifrado, patronPermutacion, ronda):
+    patron = invertirPatron(patronPermutacion)
+    for j in range(ronda):
+        for i in range(0, len(arreglo_cifrado), 2):
+            arreglo_cifrado[i] = desplazarMenosUno(arreglo_cifrado[i])
+            arreglo_cifrado[i] =  permutacion(arreglo_cifrado[i], patron)
+        if j != ronda - 1:
+            arreglo_cifrado = intercambiarIndices(arreglo_cifrado)
+    return arreglo_cifrado
 
 def main():
-    mensaje = "CARLOSODETTEDELACRUZLOPEZ"
-    patronPermutacion = "4213"
-    ronda = 10
+    mensaje = "CARLOS ODETTE DE LA CRUZ LOPEZ"
+    patronPermutacion = "3241"
+    ronda = 1
     
     print(f"".center(50,"="))
     print(f" Datos de entrada ".center(50,"="))
@@ -76,6 +100,9 @@ def main():
     print(f"".center(50,"="))
     print(f" Datos de Salida ".center(50,"="))
     print(f"".center(50,"="))
-    print(f"Mensaje cifrado: {cifradoLucifer(mensaje, patronPermutacion,ronda)}")
+    cifrado = cifradoLucifer(mensaje, patronPermutacion,ronda)
+    print(f"Mensaje cifrado: {cifrado}")
+    descifrado = descrifrarLucifer(cifrado,patronPermutacion,ronda)
+    print(f"Mensaje descifrado: {descifrado}")
 
 main()
